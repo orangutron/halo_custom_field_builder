@@ -2,4 +2,4 @@
 .env
 Cargo.lock
 *.csv
-*.xlsx
+example_field_post.jsonc
