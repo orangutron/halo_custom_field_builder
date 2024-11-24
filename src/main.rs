@@ -2,19 +2,40 @@ mod config;
 mod models;
 mod readers;
 mod error;
+mod transformers;
 
 use config::Config;
 use readers::csv_reader::CsvReader;
+use transformers::json_transformer::JsonTransformer;
 use error::{Result, CustomError};
 
+#[cfg(windows)]
+fn clear_console() {
+    std::process::Command::new("cmd")
+        .args(["/c", "cls"])
+        .status()
+        .unwrap();
+}
+
+#[cfg(not(windows))]
+fn clear_console() {
+    std::process::Command::new("clear")
+        .status()
+        .unwrap();
+}
+
 fn run() -> Result<()> {
+    clear_console();
+    
     let config = Config::new()?;
     let reader = CsvReader::new();
     
     let fields = reader.read_fields(&config)?;
+    println!("Successfully validated {} fields", fields.len());
     
-    println!("Successfully loaded {} fields", fields.len());
-    println!("Fields: {:#?}", fields);
+    // Transform to JSON silently
+    JsonTransformer::to_json(&fields)?;
+    println!("JSON transformation complete");
     
     Ok(())
 }

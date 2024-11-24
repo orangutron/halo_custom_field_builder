@@ -4,7 +4,17 @@ A CLI tool for bulk creation of custom fields in Halo using a CSV file.
 
 ## Current Status
 
-Initial development - Input validation implemented
+- ✅ Environment configuration validation
+- ✅ CSV input validation with detailed error messages
+- ✅ JSON transformation with Halo API format
+- 🚧 API integration (pending)
+
+## Features
+
+- Validates environment configuration (URLs, credentials, file paths)
+- Validates CSV field definitions against Halo's requirements
+- Transforms validated fields to Halo API JSON format
+- Provides clear error messages for configuration and data issues
 
 ## Requirements
 

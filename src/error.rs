@@ -25,6 +25,7 @@ pub enum ConfigErrorKind {
     InvalidUrl(String),
     EmptyValue(String),
     InvalidUrlFormat(String),
+    JsonError(String),
 }
 
 #[derive(Debug)]
@@ -88,6 +89,8 @@ impl fmt::Display for CustomError {
                     write!(f, "Configuration value for '{}' cannot be empty", field),
                 ConfigErrorKind::InvalidUrlFormat(url) =>
                     write!(f, "Invalid URL format for '{}'. URL must be a valid HTTPS URL", url),
+                ConfigErrorKind::JsonError(msg) => 
+                    write!(f, "JSON serialization error: {}", msg),
             },
         }
     }
@@ -104,3 +107,10 @@ impl From<csv::Error> for CustomError {
 
 // Create a type alias for Result
 pub type Result<T> = std::result::Result<T, CustomError>;
+
+// Add From implementation for serde_json::Error
+impl From<serde_json::Error> for CustomError {
+    fn from(error: serde_json::Error) -> Self {
+        CustomError::ConfigError(ConfigErrorKind::JsonError(error.to_string()))
+    }
+}
