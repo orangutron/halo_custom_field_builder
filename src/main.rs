@@ -52,6 +52,7 @@ impl Config{
             }
     }
 }
+
 fn main() {
     let config = Config::load_config();
     println!("{:#?}", config);
