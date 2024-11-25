@@ -23,7 +23,7 @@ pub enum ConfigErrorKind {
     MissingEnvFile,
     MissingEnvVar(String),
     InvalidUrl(String),
-    EmptyValue(String),
+    EmptyEnvVar(String),
     InvalidUrlFormat(String),
     JsonError(String),
 }
@@ -82,11 +82,11 @@ impl fmt::Display for CustomError {
                 ConfigErrorKind::MissingEnvFile => 
                     write!(f, "Failed to load .env file. Please ensure it exists in the project root"),
                 ConfigErrorKind::MissingEnvVar(var) => 
-                    write!(f, "Required environment variable '{}' is not set", var),
+                    write!(f, "Required environment variable '{}' is must present", var),
                 ConfigErrorKind::InvalidUrl(url) => 
                     write!(f, "Invalid URL format: {}", url),
-                ConfigErrorKind::EmptyValue(field) =>
-                    write!(f, "Configuration value for '{}' cannot be empty", field),
+                ConfigErrorKind::EmptyEnvVar(field) =>
+                    write!(f, "Configuration value for '{}' must have value", field),
                 ConfigErrorKind::InvalidUrlFormat(url) =>
                     write!(f, "Invalid URL format for '{}'. URL must be a valid HTTPS URL", url),
                 ConfigErrorKind::JsonError(msg) => 

@@ -20,7 +20,7 @@ impl Config {
             .map_err(|_| CustomError::ConfigError(ConfigErrorKind::MissingEnvVar(key.to_string())))?;
         
         if !allow_empty && value.trim().is_empty() {
-            return Err(CustomError::ConfigError(ConfigErrorKind::EmptyValue(key.to_string())));
+            return Err(CustomError::ConfigError(ConfigErrorKind::EmptyEnvVar(key.to_string())));
         }
         
         Ok(value.trim().to_string())
@@ -28,19 +28,15 @@ impl Config {
 
     fn validate_url(url: &str, field_name: &str) -> Result<String> {
         // Ensure URL starts with https:// and is valid
-        let url_str = if !url.starts_with("https://") {
-            format!("https://{}", url.trim_start_matches("http://"))
-        } else {
-            url.to_string()
-        };
-
-        // Validate URL format using the url crate
-        Url::parse(&url_str).map_err(|_| 
-            CustomError::ConfigError(ConfigErrorKind::InvalidUrlFormat(field_name.to_string()))
+        let url_actual = Url::parse(&url).map_err(|_| 
+            CustomError::ConfigError(ConfigErrorKind::InvalidUrlFormat(url.to_string()))
         )?;
+        if url_actual.scheme() != "https" {
+            return Err(CustomError::ConfigError(ConfigErrorKind::InvalidUrlFormat(url.to_string())));
+        }
 
         // Remove trailing slash if present
-        Ok(url_str.trim_end_matches('/').to_string())
+        Ok(url.trim_end_matches('/').to_string())
     }
 
     fn build_token_url(base_url: &str, tenant: &str) -> String {

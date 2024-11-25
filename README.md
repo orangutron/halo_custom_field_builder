@@ -31,7 +31,7 @@ Create a `.env` file in your project root with the following configuration:
 
 | Variable           | Required | Description                | Format Requirements                                                                           |
 | -------------------- | ---------- | ---------------------------- | ----------------------------------------------------------------------------------------------- |
-| `BASE_URL`         | Yes      | Halo instance URL          | Must be a valid HTTPS URL. Will be normalized to include 'https://' and remove trailing slash |
+| `BASE_URL`         | Yes      | Halo instance URL          | Must start with 'https://' and contain only the base domain (e.g., 'https://test.halo.com'). Do not include paths like '/api' or '/auth' |
 | `TENANT`           | No       | Halo tenant name           | Can be empty for on-premise installations                                                     |
 | `CLIENT_ID`        | Yes      | OAuth2.0 client identifier | Cannot be empty                                                                               |
 | `CLIENT_SECRET`    | Yes      | OAuth2.0 client secret     | Cannot be empty                                                                               |
@@ -41,12 +41,12 @@ Create a `.env` file in your project root with the following configuration:
 
 ```env
 # Basic Halo instance info
-BASE_URL=https://customfieldbuildertest1.haloitsm.com
-TENANT=customfieldbuildertest1
+BASE_URL=https://test.halo.com
+TENANT=test
 
 # API Application info
-CLIENT_ID=dd5ef51d-ec0f-4247-b79d-4152b0e40dec
-CLIENT_SECRET=8595ec7e-81e5-4a17-b5cf-6c3ae166e0c7-f65cde17-37da-4cf1-89de-1fdda60d915b
+CLIENT_ID=dd5ef51d-ec0f-4247-b79d-1234b0e40dec
+CLIENT_SECRET=8595ec7e-81e5-4a17-1234-6c3ae166e0c7-f65cde17-37da-4cf1-89de-1fdda60d915b
 
 # Source data
 SOURCE_FILE_NAME=source.csv
