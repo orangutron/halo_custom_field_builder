@@ -29,11 +29,40 @@ pub enum ConfigErrorKind {
 }
 
 #[derive(Debug)]
+pub enum AuthErrorKind {
+    TokenFetchFailed(String),
+    InvalidTokenResponse(String),
+    TokenExpired,
+    Unauthorized(String),
+    InvalidCredentials,
+    NetworkError(String),
+}
+
+#[derive(Debug)]
+pub enum IOErrorKind {
+    CreateDir(String),
+    ReadDir(String),
+    ReadFile(String),
+    WriteFile(String),
+    Metadata(String),
+}
+
+#[derive(Debug)]
+pub enum ApiErrorKind {
+    FieldCreationFailed(String, String),  // (field_label, error_message)
+    InvalidResponse(String),
+    NetworkError(String),
+}
+
+#[derive(Debug)]
 pub enum CustomError {
     CsvError(csv::Error),
     MissingColumn(String),
     FieldError(FieldError),
     ConfigError(ConfigErrorKind),
+    AuthError(AuthErrorKind),
+    IOError(IOErrorKind),
+    ApiError(ApiErrorKind),
 }
 
 impl fmt::Display for CustomError {
@@ -67,8 +96,7 @@ impl fmt::Display for CustomError {
                         label
                     ),
                     FieldErrorKind::InvalidTypeId(type_id) => format!(
-                        "Invalid type_id: {}. Valid values are: 0 (Text), 1 (Memo), 2 (Single Selection), \
-                        3 (Multiple Selection), 4 (Date), 5 (Time), 6 (Checkbox), 10 (Rich)", 
+                        "Invalid type_id: {}.\n\nValid values are:\n0 (Text)\n1 (Memo)\n2 (Single Selection\n3 (Multiple Selection)\n4 (Date)\n5 (Time)\n6 (Checkbox)\n10 (Rich)", 
                         type_id
                     ),
                     FieldErrorKind::InvalidInputType(msg) => msg.clone(),
@@ -92,6 +120,35 @@ impl fmt::Display for CustomError {
                 ConfigErrorKind::JsonError(msg) => 
                     write!(f, "JSON serialization error: {}", msg),
             },
+            CustomError::AuthError(kind) => match kind {
+                AuthErrorKind::TokenFetchFailed(msg) => 
+                    write!(f, "Failed to fetch authentication token: {}", msg),
+                AuthErrorKind::InvalidTokenResponse(msg) => 
+                    write!(f, "Invalid token response from server: {}", msg),
+                AuthErrorKind::TokenExpired => 
+                    write!(f, "Authentication token has expired"),
+                AuthErrorKind::Unauthorized(msg) => 
+                    write!(f, "Unauthorized: {}", msg),
+                AuthErrorKind::InvalidCredentials => 
+                    write!(f, "Invalid client credentials"),
+                AuthErrorKind::NetworkError(msg) => 
+                    write!(f, "Network error during authentication: {}", msg),
+            },
+            CustomError::IOError(kind) => match kind {
+                IOErrorKind::CreateDir(msg) => write!(f, "Failed to create directory: {}", msg),
+                IOErrorKind::ReadDir(msg) => write!(f, "Failed to read directory: {}", msg),
+                IOErrorKind::ReadFile(msg) => write!(f, "Failed to read file: {}", msg),
+                IOErrorKind::WriteFile(msg) => write!(f, "Failed to write file: {}", msg),
+                IOErrorKind::Metadata(msg) => write!(f, "Failed to get metadata: {}", msg),
+            },
+            CustomError::ApiError(kind) => match kind {
+                ApiErrorKind::FieldCreationFailed(label, error) => 
+                    write!(f, "Failed to create field '{}': {}", label, error),
+                ApiErrorKind::InvalidResponse(msg) => 
+                    write!(f, "Invalid API response: {}", msg),
+                ApiErrorKind::NetworkError(msg) => 
+                    write!(f, "Network error: {}", msg),
+            },
         }
     }
 }
@@ -112,5 +169,46 @@ pub type Result<T> = std::result::Result<T, CustomError>;
 impl From<serde_json::Error> for CustomError {
     fn from(error: serde_json::Error) -> Self {
         CustomError::ConfigError(ConfigErrorKind::JsonError(error.to_string()))
+    }
+}
+
+// Add conversion from reqwest::Error to CustomError
+impl From<reqwest::Error> for CustomError {
+    fn from(error: reqwest::Error) -> Self {
+        if error.is_status() {
+            if let Some(status) = error.status() {
+                if status == reqwest::StatusCode::UNAUTHORIZED {
+                    return CustomError::AuthError(AuthErrorKind::InvalidCredentials);
+                }
+            }
+        }
+        
+        if error.is_timeout() {
+            return CustomError::AuthError(
+                AuthErrorKind::NetworkError("Request timed out".to_string())
+            );
+        }
+        
+        CustomError::AuthError(AuthErrorKind::NetworkError(error.to_string()))
+    }
+}
+
+// Add implementation for converting std::io::Error to CustomError
+impl From<std::io::Error> for CustomError {
+    fn from(error: std::io::Error) -> Self {
+        CustomError::IOError(IOErrorKind::ReadFile(error.to_string()))
+    }
+}
+
+impl fmt::Display for ApiErrorKind {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match self {
+            ApiErrorKind::FieldCreationFailed(label, error) => 
+                write!(f, "Failed to create field '{}': {}", label, error),
+            ApiErrorKind::InvalidResponse(msg) => 
+                write!(f, "Invalid API response: {}", msg),
+            ApiErrorKind::NetworkError(msg) => 
+                write!(f, "Network error: {}", msg),
+        }
     }
 }

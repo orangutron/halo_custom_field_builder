@@ -3,7 +3,7 @@ use std::env;
 use url::Url;
 use crate::error::{Result, CustomError, ConfigErrorKind};
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Config {
     pub base_url: String,
     pub tenant: String,
@@ -26,7 +26,7 @@ impl Config {
         Ok(value.trim().to_string())
     }
 
-    fn validate_url(url: &str, field_name: &str) -> Result<String> {
+    fn validate_url(url: &str, _field_name: &str) -> Result<String> {
         // Ensure URL starts with https:// and is valid
         let url_actual = Url::parse(&url).map_err(|_| 
             CustomError::ConfigError(ConfigErrorKind::InvalidUrlFormat(url.to_string()))

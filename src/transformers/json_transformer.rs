@@ -2,7 +2,7 @@ use serde::Serialize;
 use crate::models::field::Field;
 
 #[derive(Serialize)]
-struct FieldJson {
+pub struct FieldJson {
     usage: u8,
     name: String,
     label: String,
