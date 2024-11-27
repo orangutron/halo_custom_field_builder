@@ -101,6 +101,7 @@ fn cleanup_old_logs(logs_dir: &Path) -> Result<()> {
     Ok(())
 }
 
+#[allow(dead_code)]
 pub fn get_log_stats() -> Result<String> {
     let logs_dir = Path::new("logs");
     let mut total_size = 0;
@@ -143,6 +144,7 @@ pub fn get_log_stats() -> Result<String> {
     ))
 }
 
+#[allow(dead_code)]
 fn format_bytes(bytes: u64) -> String {
     const KB: u64 = 1024;
     const MB: u64 = KB * 1024;
@@ -159,6 +161,7 @@ fn format_bytes(bytes: u64) -> String {
     }
 }
 
+#[allow(dead_code)]
 pub fn log_import_result(result: &ImportResults) -> Result<()> {
     info!("\n{}", "=".repeat(80));
     info!("Import Results Summary");

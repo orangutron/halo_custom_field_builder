@@ -95,35 +95,29 @@ impl ScreenManager {
 
     pub async fn process_all_fields(
         &self, 
-        field_client: &FieldClient, 
-        auth_token: &str
+        field_client: &FieldClient,
     ) -> Result<ImportResults> {
         let mut results = ImportResults::new();
         
         for field in &self.fields {
-            print!("Processing field: {}", field.label.bright_yellow());
-            io::stdout().flush()?;
-            
-            match field_client.create_field(field, auth_token).await {
+            match field_client.create_field(field).await {
                 Ok(_) => {
                     results.add_success(field.label.clone());
-                    println!(" {}", "✓".bright_green());
+                    info!("✓ Field processed successfully: {}", field.label);
                 },
                 Err(e) => {
                     results.add_failure(field.label.clone(), e.to_string());
-                    println!(" {}", "✗".bright_red());
-                    println!("  {}: {}", "Error".bright_red(), e);
+                    error!("✗ Field processing failed: {}", e);
                 }
             }
         }
-
+        
         Ok(results)
     }
 
     pub async fn debug_mode(
         &self, 
-        field_client: &FieldClient, 
-        auth_token: &str
+        field_client: &FieldClient,
     ) -> Result<ImportResults> {
         info!("\nEntering Debug Mode");
         info!("This mode will process fields one at a time\n");
@@ -135,7 +129,7 @@ impl ScreenManager {
                 DebugAction::Process => {
                     info!("Processing field: {}", field.label);
                     
-                    match field_client.create_field(field, auth_token).await {
+                    match field_client.create_field(field).await {
                         Ok(_) => {
                             results.add_success(field.label.clone());
                             info!("✓ Field processed successfully\n");

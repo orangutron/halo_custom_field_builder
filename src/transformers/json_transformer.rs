@@ -38,6 +38,7 @@ impl JsonTransformer {
             .collect()
     }
 
+    #[allow(dead_code)]
     pub fn to_json(fields: &[Field]) -> Result<String, serde_json::Error> {
         let json_fields = Self::transform_fields(fields);
         serde_json::to_string_pretty(&json_fields)

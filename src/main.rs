@@ -53,7 +53,7 @@ async fn run() -> Result<()> {
     let screen_manager = ScreenManager::new(fields);
     screen_manager.show_initial_stats(&token.split_whitespace().next().unwrap_or("Unknown"))?;
 
-    let field_client = FieldClient::new(config.clone());
+    let field_client = FieldClient::new(config.clone(), token);
     
     match screen_manager.get_run_mode()? {
         RunMode::Import => {
@@ -61,7 +61,7 @@ async fn run() -> Result<()> {
             info!("Starting Full Import Mode");
             info!("{}\n", "=".repeat(80));
             
-            let results = screen_manager.process_all_fields(&field_client, &token).await?;
+            let results = screen_manager.process_all_fields(&field_client).await?;
             results.log_summary();
         },
         RunMode::Debug => {
@@ -69,7 +69,7 @@ async fn run() -> Result<()> {
             info!("Starting Debug Mode");
             info!("{}\n", "=".repeat(80));
             
-            let results = screen_manager.debug_mode(&field_client, &token).await?;
+            let results = screen_manager.debug_mode(&field_client).await?;
             results.log_summary();
         },
         RunMode::Quit => {

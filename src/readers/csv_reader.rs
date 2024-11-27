@@ -46,6 +46,7 @@ impl CsvReader {
         })
     }
     
+    #[allow(dead_code)]
     fn validate_required_field(&self, value: &str, field_name: &str, row: usize) -> Result<String> {
         let trimmed = value.trim();
         if trimmed.is_empty() {

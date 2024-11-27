@@ -5,7 +5,9 @@ use crate::error::{Result, CustomError, ConfigErrorKind};
 
 #[derive(Debug, Clone)]
 pub struct Config {
+    #[allow(dead_code)]
     pub base_url: String,
+    #[allow(dead_code)]
     pub tenant: String,
     pub token_url: String,
     pub api_url: String,

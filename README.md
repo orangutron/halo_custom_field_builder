@@ -7,7 +7,10 @@ A CLI tool for bulk creation of custom fields in Halo using a CSV file.
 - ✅ Environment configuration validation
 - ✅ CSV input validation with detailed error messages
 - ✅ JSON transformation with Halo API format
-- 🚧 API integration (pending)
+- ✅ API integration with authentication
+- ✅ Debug mode for field-by-field processing
+- ✅ Comprehensive logging system
+- ✅ Error handling and reporting
 
 ## Features
 
@@ -15,12 +18,21 @@ A CLI tool for bulk creation of custom fields in Halo using a CSV file.
 - Validates CSV field definitions against Halo's requirements
 - Transforms validated fields to Halo API JSON format
 - Provides clear error messages for configuration and data issues
+- Supports OAuth2.0 authentication with Halo API
+- Includes debug mode for careful field review
+- Maintains detailed operation logs with automatic rotation
+- Offers both bulk import and field-by-field processing
+
+## About
+
+A CLI tool for bulk creation of custom fields in Halo using a CSV file. Built with Rust.
 
 ## Requirements
 
-- Rust (latest stable version)
 - Valid `.env` configuration file
 - Properly formatted CSV input file
+
+That's it! The program is distributed as a standalone executable, so no additional runtime dependencies are required.
 
 ## Setup Guide
 
@@ -181,3 +193,76 @@ Here's a sample configuration for a pizza ordering system:
 | deliveryTime        | Preferred Time       | 5       | 0             |                                                                                                                                                                                                                             |
 | paymentType         | Payment Type         | 2       | 2             | Cash,Card,Check                                                                                                                                                                                                             |
 | orderTip            | Tip                  | 0       | 4             |                                                                                                                                                                                                                             |
+
+## Known Limitations
+
+- The program currently only supports field creation (not updating or deleting)
+- All fields are created with default usage and searchable settings
+- Rate limiting is implemented to respect API constraints:
+  - API limit: 700 requests per 5-minute rolling window
+  - Program enforces 500ms delay between requests (~120 requests/minute)
+  - This ensures staying well under the API rate limit while maintaining reliability
+- Batch processing is limited to one field at a time to ensure proper error handling
+
+## Rate Limiting
+
+### API Constraints
+The Halo API implements rate limiting of 700 requests per 5-minute rolling window. To ensure reliable operation and prevent throttling, this program implements a conservative rate limiting strategy:
+
+- Enforces a 500ms delay between each field creation request
+- Results in approximately 120 requests per minute
+- Stays well under the API limit of 700 requests per 5 minutes
+- No manual throttling required from the user
+
+### Impact on Processing Time
+Due to the rate limiting and API processing time:
+- Each field takes approximately 1 second to process (500ms enforced delay + API response time)
+- 100 fields ≈ 2 minutes
+- 500 fields ≈ 10 minutes
+- 1000 fields ≈ 17 minutes (based on actual testing)
+
+Real-world testing with 1000 fields completed in approximately 17 minutes (15:10:34 to 15:27:05), which accounts for:
+- The 500ms enforced delay between requests
+- Halo API processing time
+- Network latency
+- Response handling
+
+This controlled pacing helps ensure:
+- Reliable field creation
+- No API throttling errors
+- Predictable processing times
+- Minimal impact on API performance
+
+## Error Handling
+
+The program includes comprehensive error handling for:
+- Environment configuration issues
+- CSV file validation
+- API authentication
+- Field creation failures
+
+Each error provides specific details about:
+- The location of the error (row number for CSV errors)
+- The nature of the problem
+- Suggested fixes where applicable
+
+## Logging
+
+The program maintains detailed logs of all operations:
+- Logs are stored in the `logs` directory
+- Log files are automatically rotated (keeping last 7 days)
+- Maximum of 100 log files are retained
+- Each log includes:
+  - Timestamp
+  - Operation type
+  - Success/failure status
+  - Detailed error messages when applicable
+
+## Debug Mode
+
+The program includes a debug mode that allows you to:
+- Process fields one at a time
+- Review field details before processing
+- Skip specific fields
+- Get immediate feedback on success/failure
+- Exit at any point

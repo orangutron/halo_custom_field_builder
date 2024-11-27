@@ -1,3 +1,5 @@
+use tokio::time::sleep;
+use std::time::Duration;
 use reqwest::Client as ReqwestClient;
 use crate::models::field::Field;
 use crate::error::{Result, CustomError, ApiErrorKind};
@@ -8,30 +10,35 @@ use log::debug;
 pub struct FieldClient {
     config: Config,
     http_client: ReqwestClient,
+    auth_token: String,
 }
 
 impl FieldClient {
-    pub fn new(config: Config) -> Self {
+    pub fn new(config: Config, auth_token: String) -> Self {
         Self {
             config,
             http_client: ReqwestClient::new(),
+            auth_token,
         }
     }
 
-    pub async fn create_field(&self, field: &Field, auth_token: &str) -> Result<()> {
-        let field_json = JsonTransformer::transform_fields(&[field.clone()]);
-        let url = format!("{}/fieldinfo", self.config.api_url);
+    pub async fn create_field(&self, field: &Field) -> Result<()> {
+        // Rate limiting: 500ms delay between requests
+        // Max 120 requests/minute, staying under the 700/5min limit
+        sleep(Duration::from_millis(500)).await;
 
-        debug!("Sending request to: {}", url);
-        debug!("Request payload: {}", serde_json::to_string_pretty(&field_json)?);
-
+        let endpoint = format!("{}/fieldinfo", self.config.api_url);
+        let json = JsonTransformer::to_json(&[field.clone()])?;
+        debug!("Sending field creation request for: {}", field.label);
+        
         let response = self.http_client
-            .post(&url)
-            .header("Authorization", auth_token)
+            .post(&endpoint)
+            .header("Authorization", &self.auth_token)
             .header("Content-Type", "application/json")
-            .json(&field_json)  // Send the entire array, not just the first element
+            .body(json)
             .send()
-            .await?;
+            .await
+            .map_err(|e| CustomError::ApiError(ApiErrorKind::NetworkError(e.to_string())))?;
 
         if !response.status().is_success() {
             let status = response.status();

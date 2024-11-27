@@ -22,6 +22,7 @@ pub enum FieldErrorKind {
 pub enum ConfigErrorKind {
     MissingEnvFile,
     MissingEnvVar(String),
+    #[allow(dead_code)]
     InvalidUrl(String),
     EmptyEnvVar(String),
     InvalidUrlFormat(String),
@@ -32,7 +33,9 @@ pub enum ConfigErrorKind {
 pub enum AuthErrorKind {
     TokenFetchFailed(String),
     InvalidTokenResponse(String),
+    #[allow(dead_code)]
     TokenExpired,
+    #[allow(dead_code)]
     Unauthorized(String),
     InvalidCredentials,
     NetworkError(String),
@@ -50,7 +53,9 @@ pub enum IOErrorKind {
 #[derive(Debug)]
 pub enum ApiErrorKind {
     FieldCreationFailed(String, String),  // (field_label, error_message)
+    #[allow(dead_code)]
     InvalidResponse(String),
+    #[allow(dead_code)]
     NetworkError(String),
 }
 
