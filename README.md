@@ -266,3 +266,23 @@ The program includes a debug mode that allows you to:
 - Skip specific fields
 - Get immediate feedback on success/failure
 - Exit at any point
+
+## Distributable Structure
+
+The program distribution includes the following files:
+
+| File/Folder                | Purpose                                          | Notes                                            |
+|---------------------------|--------------------------------------------------|--------------------------------------------------|
+| `halo_custom_field_builder.exe` | Main executable                            | Core program                                     |
+| `.env`                    | Configuration file                               | Must be named exactly ".env" with required variables |
+| `source.csv`              | Your input CSV file                              | Must match the name specified in .env            |
+| `logs/`                   | Directory for log files                          | Created automatically on first run               |
+
+### Important Requirements
+
+| Requirement              | Description                                                                |
+|-------------------------|----------------------------------------------------------------------------|
+| `.env` Location         | Must be in the same directory as the executable                            |
+| Source File Location    | Must be in the same directory as the executable                            |
+| Program Launch          | Simply double-click the executable to run the program                      |
+| Logs Directory          | Created automatically on first run in the executable directory             |
