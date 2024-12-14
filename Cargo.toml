@@ -1,5 +1,5 @@
 [package]
-name = "main"
+name = "halo_custom_field_builder"
 version = "0.1.0"
 edition = "2021"
 
