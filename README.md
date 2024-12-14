@@ -41,13 +41,13 @@ That's it! The program is distributed as a standalone executable, so no addition
 Create a `.env` file in your project root with the following configuration:
 
 
-| Variable           | Required | Description                | Format Requirements                                                                           |
-| -------------------- | ---------- | ---------------------------- | ----------------------------------------------------------------------------------------------- |
+| Variable           | Required | Description                | Format Requirements                                                                                                                      |
+| -------------------- | ---------- | ---------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
 | `BASE_URL`         | Yes      | Halo instance URL          | Must start with 'https://' and contain only the base domain (e.g., 'https://test.halo.com'). Do not include paths like '/api' or '/auth' |
-| `TENANT`           | No       | Halo tenant name           | Can be empty for on-premise installations                                                     |
-| `CLIENT_ID`        | Yes      | OAuth2.0 client identifier | Cannot be empty                                                                               |
-| `CLIENT_SECRET`    | Yes      | OAuth2.0 client secret     | Cannot be empty                                                                               |
-| `SOURCE_FILE_NAME` | Yes      | Input file name            | Cannot be empty                                                                               |
+| `TENANT`           | No       | Halo tenant name           | Can be empty for on-premise installations                                                                                                |
+| `CLIENT_ID`        | Yes      | OAuth2.0 client identifier | Cannot be empty                                                                                                                          |
+| `CLIENT_SECRET`    | Yes      | OAuth2.0 client secret     | Cannot be empty                                                                                                                          |
+| `SOURCE_FILE_NAME` | Yes      | Input file name            | Cannot be empty                                                                                                                          |
 
 #### Example `.env` Configuration
 
@@ -207,6 +207,7 @@ Here's a sample configuration for a pizza ordering system:
 ## Rate Limiting
 
 ### API Constraints
+
 The Halo API implements rate limiting of 700 requests per 5-minute rolling window. To ensure reliable operation and prevent throttling, this program implements a conservative rate limiting strategy:
 
 - Enforces a 500ms delay between each field creation request
@@ -215,19 +216,23 @@ The Halo API implements rate limiting of 700 requests per 5-minute rolling windo
 - No manual throttling required from the user
 
 ### Impact on Processing Time
+
 Due to the rate limiting and API processing time:
+
 - Each field takes approximately 1 second to process (500ms enforced delay + API response time)
 - 100 fields ≈ 2 minutes
 - 500 fields ≈ 10 minutes
 - 1000 fields ≈ 17 minutes (based on actual testing)
 
 Real-world testing with 1000 fields completed in approximately 17 minutes (15:10:34 to 15:27:05), which accounts for:
+
 - The 500ms enforced delay between requests
 - Halo API processing time
 - Network latency
 - Response handling
 
 This controlled pacing helps ensure:
+
 - Reliable field creation
 - No API throttling errors
 - Predictable processing times
@@ -236,12 +241,14 @@ This controlled pacing helps ensure:
 ## Error Handling
 
 The program includes comprehensive error handling for:
+
 - Environment configuration issues
 - CSV file validation
 - API authentication
 - Field creation failures
 
 Each error provides specific details about:
+
 - The location of the error (row number for CSV errors)
 - The nature of the problem
 - Suggested fixes where applicable
@@ -249,6 +256,7 @@ Each error provides specific details about:
 ## Logging
 
 The program maintains detailed logs of all operations:
+
 - Logs are stored in the `logs` directory
 - Log files are automatically rotated (keeping last 7 days)
 - Maximum of 100 log files are retained
@@ -261,6 +269,7 @@ The program maintains detailed logs of all operations:
 ## Debug Mode
 
 The program includes a debug mode that allows you to:
+
 - Process fields one at a time
 - Review field details before processing
 - Skip specific fields
@@ -271,20 +280,36 @@ The program includes a debug mode that allows you to:
 
 The program distribution includes the following files:
 
-| File/Folder                        | Purpose                                          | Notes                                            |
-|-----------------------------------|--------------------------------------------------|--------------------------------------------------|
-| `halo_custom_field_builder.exe`    | Main executable                                  | Core program                                     |
-| `run_halo_custom_field_builder.bat`| Launcher script                                 | Double-click this to run the program             |
-| `.env.template`                    | Template configuration file                      | Rename to ".env" and update with your values     |
-| `source.csv`                       | Your input CSV file                              | Must match the name specified in .env            |
-| `logs/`                           | Directory for log files                          | Created automatically on first run               |
-| `README.md`                       | Documentation                                    | Contains setup and usage instructions            |
+
+| File/Folder                     | Purpose                     | Notes                                        |
+| --------------------------------- | ----------------------------- | ---------------------------------------------- |
+| `halo_custom_field_builder.exe` | Main executable             | Core program                                 |
+| `.env.template`                 | Template configuration file | Rename to ".env" and update with your values |
+| `source.csv`                    | Your input CSV file         | Must match the name specified in .env        |
+| `logs/`                         | Directory for log files     | Created automatically on first run           |
+| `README.md`                     | Documentation               | Contains setup and usage instructions        |
 
 ### Important Requirements
 
-| Requirement              | Description                                                                |
-|-------------------------|----------------------------------------------------------------------------|
-| `.env` Location         | Must be in the same directory as the executable                            |
-| Source File Location    | Must be in the same directory as the executable                            |
-| Program Launch          | Double-click the `run_halo_custom_field_builder.bat` file to run the program |
-| Logs Directory          | Created automatically on first run in the executable directory             |
+
+| Requirement          | Description                                                    |
+| ---------------------- | ---------------------------------------------------------------- |
+| `.env` Location      | Must be in the same directory as the executable                |
+| Source File Location | Must be in the same directory as the executable                |
+| Logs Directory       | Created automatically on first run in the executable directory |
+
+## Running the Program
+
+### Direct Execution
+1. Open Command Prompt in program directory (Windows + R, type "cmd", Enter)
+2. Run: `halo_custom_field_builder.exe`
+
+### Quick Launch Setup (Optional)
+1. Create a new .bat file containing:
+   ```batch
+   cmd /k halo_custom_field_builder.exe
+   ```
+2. Save as `run_halo_custom_field_builder.bat` in program directory
+3. Double-click to run
+
+> **Note**: The .bat file is not included in the distributable since antivirus software often flags batch files. You can safely create this launcher yourself following the steps above, or simply use the direct execution method. The .bat file enables running via shortcuts from any location.
