@@ -271,12 +271,14 @@ The program includes a debug mode that allows you to:
 
 The program distribution includes the following files:
 
-| File/Folder                | Purpose                                          | Notes                                            |
-|---------------------------|--------------------------------------------------|--------------------------------------------------|
-| `halo_custom_field_builder.exe` | Main executable                            | Core program                                     |
-| `.env`                    | Configuration file                               | Must be named exactly ".env" with required variables |
-| `source.csv`              | Your input CSV file                              | Must match the name specified in .env            |
-| `logs/`                   | Directory for log files                          | Created automatically on first run               |
+| File/Folder                        | Purpose                                          | Notes                                            |
+|-----------------------------------|--------------------------------------------------|--------------------------------------------------|
+| `halo_custom_field_builder.exe`    | Main executable                                  | Core program                                     |
+| `run_halo_custom_field_builder.bat`| Launcher script                                 | Double-click this to run the program             |
+| `.env.template`                    | Template configuration file                      | Rename to ".env" and update with your values     |
+| `source.csv`                       | Your input CSV file                              | Must match the name specified in .env            |
+| `logs/`                           | Directory for log files                          | Created automatically on first run               |
+| `README.md`                       | Documentation                                    | Contains setup and usage instructions            |
 
 ### Important Requirements
 
@@ -284,5 +286,5 @@ The program distribution includes the following files:
 |-------------------------|----------------------------------------------------------------------------|
 | `.env` Location         | Must be in the same directory as the executable                            |
 | Source File Location    | Must be in the same directory as the executable                            |
-| Program Launch          | Simply double-click the executable to run the program                      |
+| Program Launch          | Double-click the `run_halo_custom_field_builder.bat` file to run the program |
 | Logs Directory          | Created automatically on first run in the executable directory             |
