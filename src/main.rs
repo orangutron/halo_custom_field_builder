@@ -9,7 +9,7 @@ mod api;
 mod transformers;
 
 use config::Config;
-use readers::csv_reader::CsvReader;
+use readers::CsvReader;
 use error::{Result, CustomError, AuthErrorKind};
 use auth::client::AuthClient;
 use log::{info, error};

@@ -1,5 +1,5 @@
-use serde::Serialize;
 use crate::models::field::Field;
+use serde::Serialize;
 
 #[derive(Serialize)]
 pub struct FieldJson {
@@ -21,18 +21,19 @@ pub struct JsonTransformer;
 
 impl JsonTransformer {
     pub fn transform_fields(fields: &[Field]) -> Vec<FieldJson> {
-        fields.iter()
+        fields
+            .iter()
             .map(|field| FieldJson {
-                usage: 1,  // Default value
+                usage: 1, // Default value
                 name: field.name.clone(),
                 label: field.label.clone(),
                 type_id: field.type_id.to_string(),
                 inputtype: field.input_type_id.to_string(),
                 new_values: field.options.clone(),
-                searchable: true,        // Default value
-                user_searchable: true,   // Default value
+                searchable: true,          // Default value
+                user_searchable: true,     // Default value
                 calendar_searchable: true, // Default value
-                copytochild: true,       // Default value
+                copytochild: true,         // Default value
                 copytochildonupdate: true, // Default value
             })
             .collect()
